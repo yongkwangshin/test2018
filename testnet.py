@@ -34,31 +34,22 @@ def full_layer(input, size):
 
 import argparse
 import glob
-""" 
 
-python  train.py \
+"""  1 Execution code
+
+python  testnet.py \
 --train_images="data/dataset1/images_prepped_train/" \
 --train_annotations="data/dataset1/annotations_prepped_train/" \
 --val_images="data/dataset1/images_prepped_test/" \
 --val_annotations="data/dataset1/annotations_prepped_test/"
 
-python  image_distributer.py --train_images="data1/" --train_annotations="data2/"
-
 
 python  testnet.py --train_images="data1/"
-
-
-python  cifartest2.py \
---train_images="data/dataset1/train1/" \
---train_annotations="data/dataset1/train2/" \
---val_images="data/dataset1/test1/" \
---val_annotations="data/dataset1/test2/" 
-
 
 """
 import random
 
-" 1 set argparse "
+" 2 set argparse "
 parser = argparse.ArgumentParser()
 parser.add_argument("--train_images", type = str  )
 #parser.add_argument("--train_annotations", type = str  )
@@ -66,18 +57,15 @@ parser.add_argument("--train_images", type = str  )
 #parser.add_argument("--val_annotations", type = str , default = "")
 args = parser.parse_args()
 
-" 2 get path "
+" 3 get path "
 images_path = args.train_images
 #segs_path = args.train_annotations
 #val_images_path = args.val_images
 #val_segs_path = args.val_annotations
 img = glob.glob( images_path + "*.jpg"  ) + glob.glob( images_path + "*.png"  ) +  glob.glob( images_path + "*.jpeg"  )
-
 random.shuffle(img) # shuffle
 
-#seg  = glob.glob( segs_path + "*.jpg"  ) + glob.glob( segs_path + "*.png"  ) +  glob.glob( segs_path + "*.jpeg"  )
-#seg.sort()
-
+" 4 get image "
 import cv2
 
 def getimage(path,height,width): # path isnt array, one path
@@ -85,7 +73,7 @@ def getimage(path,height,width): # path isnt array, one path
 	img = cv2.resize(img, ( width , height ))
 	return img
 
-def getimageArr(path,height,width): # path is array
+def getimageArr(path,height,width): # path is array !! warning h,w order
     imgArr=[]
     n=len(path)
     for i in range(n):
@@ -100,7 +88,7 @@ b=getimageArr(img,640,480)
 
 b = b.astype('float32') # it is necessary !!
 
-"3 Model"
+"5 image flow on Model"
 x=b
 conv1 = conv_layer(x,[5,5,3,8])
 pool1 = max_pool_2x2(conv1)
@@ -118,9 +106,9 @@ conv5 = conv_layer(pool4,[5,5,64,64])
 pool5 = max_pool_2x2(conv5)
 
 flat6=tf.reshape(pool5,[-1,20*15*64]) # w,h,c
-full6=tf.nn.relu(full_layer(flat6,))
+full6=tf.nn.relu(full_layer(flat6,)) # @@@@@@@@@@@ i dont know next to float6, Here you should enter the correct value.
 
 
-# W_fc1 = tf.Variable(tf.truncated_normal(shape=[20 * 15 * 64, 16], stddev=0.1)) # h,w,c,num of 
+# W_fc1 = tf.Variable(tf.truncated_normal(shape=[20 * 15 * 64, 16], stddev=0.1)) # h,w,c,# of featuremap? , @@@@@@@  # of featuremap is uncertain
 # b_fc1 = tf.Variable(tf.constant(0.1, shape=[16]))
 # h_conv4_flat = tf.reshape(h_conv4, [-1, 40*30*32])
